@@ -26,7 +26,7 @@ Normalized difference vegetation index (ndvi): [NASA's Terra MODIS](https://deve
 **Data Specification**
 - Confict intensity was lagged one year
 - Displacement was included as a proportion of the total population and log-transformed
-- GDP, precipitation, temperature, humidity, and NDVI were scaled
+- GDP, precipitation, temperature, humidity, and NDVI were mean centered and standardized
 - We included a random nation-level intercept
 
 
