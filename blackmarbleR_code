@@ -1,0 +1,43 @@
+########################### ~Extracting Black Marble Data~ #######################
+library(blackmarbler)
+library(geodata)
+library(sf)
+library(terra)
+library(tidyterra)
+library(lubridate)
+
+#NASA bearer token#
+bearer <- get_nasa_token(username = [username],
+                         password = [password])
+
+### Pulling for Yemen ###
+
+#Region of interest#
+roi_sf_yem <- vect('[pathway]') 
+plot(roi_sf_yem)
+
+#Pulling data#
+bm_aa_monthly <- bm_raster(roi_sf = roi_sf_yem,
+                        product_id = "VNP46A3",
+                        date = seq.Date(from = ymd("2012-04-01"), to = ymd("2022-03-01"), by="month"),
+                        variable = "AllAngle_Composite_Snow_Free",
+                        bearer = bearer)
+
+#Masking data at 300 rad. for gas flares#
+msk <- ifel(bm_aa_monthly > 300, NA, bm_aa_monthly)
+bm_monthly_mask <- mask(bm_aa_monthly, msk)
+
+#Extracting mean for admin unit 1
+trial <- extract(bm_monthly_mask, roi_sf, na.rm=T, fun=mean)
+
+
+### Pulling for Ukraine ###
+
+roi_sf_ukr <- gadm(country="UKR", level=0, path=tempdir())
+plot(roi_sf_ukr)
+
+bm_aa_monthly <- bm_extract(roi_sf = roi_sf,
+                           product_id = "VNP46A3",
+                           date = seq.Date(from = ymd("2019-01-01"), to = ymd("2024-06-01"), by="month"),
+                           variable = "AllAngle_Composite_Snow_Free",
+                           bearer = bearer)
